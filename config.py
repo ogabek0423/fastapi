@@ -17,7 +17,12 @@ async def read_items():
     return {'message': 'test api items'}
 
 
-@app.get('/test')
-async def test():
-    return {'message': 'test xabar'}
+@app.get('/user')
+async def user():
+    return {'message': 'user page'}
+
+
+@app.get('/user/{id}')
+async def read_user(id: int):
+    return {'message': f'user id = {id}'}
 
