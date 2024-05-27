@@ -1,6 +1,13 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import decorative_bse, sessionmaker
-
-ENGINE = create_engine('postgresql://postgres:23042005.o@localhost/fast', echo=True)
+from dotenv import load_dotenv
+load_dotenv()
+engine = os.getenv('DATABASE_ENGINE')
+user = os.getenv('USER')
+password = os.getenv('PASSWORD')
+host = os.getenv('HOST')
+dbname = os.getenv('DBNAME')
+ENGINE = create_engine(f'{engine}://{user}:{password}@{host}/{dbname}', echo=True)
 Session = sessionmaker()
 Base = decorative_base()
