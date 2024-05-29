@@ -1,14 +1,14 @@
 from xmlrpc.client import DateTime
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, Boolean, Float
 from sqlalchemy.orm import relationship
-from sqlalchemy_utils.types import ChoiseType
+from sqlalchemy_utils.types import ChoiceType
 from db.database import Base
 
 
 class City(Base):
-    __table_name__ = "city"
+    __tablename__ = "city"
     id = Column(Integer, primary_key=True)
-    name = Column(30, nullable=False)
+    name = Column(String(30), nullable=False)
 
     address = relationship("Address", back_populates="cities")
 
@@ -17,7 +17,7 @@ class City(Base):
 
 
 class Address(Base):
-    __table_name__ = "address"
+    __tablename__ = "address"
     id = Column(Integer, primary_key=True)
     city_id = Column(Integer, ForeignKey("city.id"))
     name = Column(String(40), nullable=False)
@@ -30,14 +30,14 @@ class Address(Base):
 
 
 class User(Base):
-    __table_name__ = "User"
+    __tablename__ = "user"
 
     id = Column(Integer, primary_key=True)
     first_name = Column(String(30), nullable=False)
     last_name = Column(String(30), nullable=False)
     username = Column(String(25), unique=True, nullable=False)
     email = Column(String(25), unique=True, nullable=False)
-    password = Column(String(20), nullable=False)
+    password = Column(Text, nullable=False)
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
     address_id = Column(Integer, ForeignKey("address.id"))
@@ -51,7 +51,7 @@ class User(Base):
 
 class Lesson(Base):
 
-    __table_name__ = "lesson"
+    __tablename__ = "lesson"
 
     id = Column(Integer, primary_key=True)
     title = Column(String(30), nullable=False)
@@ -66,7 +66,7 @@ class Lesson(Base):
 
 class Modules(Base):
 
-    __table_name__ = "modules"
+    __tablename__ = "modules"
     
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
@@ -74,14 +74,14 @@ class Modules(Base):
     lesson_id = Column(Integer, ForeignKey("lesson.id"))
 
     lson = relationship("Lesson", back_populates="les")
-    cour = relationship("Course", back_populates="modl")
+    cour = relationship("Courses", back_populates="modl")
 
     def __repr__(self):
         return self.name
 
 
 class Courses(Base):
-    __table_name__ = "courses"
+    __tablename__ = "courses"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
     description = Column(Text, nullable=False)
@@ -96,7 +96,7 @@ class Courses(Base):
 
 class PayType(Base):
 
-    __table_name__ = "pay_type"
+    __tablename__ = "pay_type"
     id = Column(Integer, primary_key=True)
     type = Column(String(50), nullable=False)
 
@@ -107,7 +107,7 @@ class PayType(Base):
 
 
 class Payments(Base):
-    __table_name__ = "payments"
+    __tablename__ = "payments"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"))
     amount = Column(Integer, nullable=False)

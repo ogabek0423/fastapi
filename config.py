@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from auth import a_router
-from models import m_router
+
 
 app = FastAPI()
 app.include_router(a_router)
-app.include_router(m_router)
+
 
 
 @app.get('/')
