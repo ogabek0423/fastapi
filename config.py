@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from auth import a_router
-
+from m5courses import course_router
 
 app = FastAPI()
 app.include_router(a_router)
-
+app.include_router(course_router)
 
 
 @app.get('/')
