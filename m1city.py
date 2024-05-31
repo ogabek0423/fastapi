@@ -26,8 +26,8 @@ async def get_all_cities():
 
 @city_router.post('/create_city')
 async def create_city(city: CityModel):
-    city_check = session.query(City).filter(City.id == city.id)
-    if city_check is not None:
+    city_check = session.query(City).filter(City.id == city.id).first()
+    if city_check:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="City already exists")
 
     new_city = City(

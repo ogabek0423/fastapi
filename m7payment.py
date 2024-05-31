@@ -18,7 +18,7 @@ async def get_all_payments():
 
 @pay_router.post('/create')
 async def create_payment(payment: PayModel):
-    check = session.query(Payments).filter(Payments.id == payment.id)
+    check = session.query(Payments).filter(Payments.id == payment.id).first()
     if check:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Payment already exists")
 

@@ -28,7 +28,7 @@ async def get_modules():
 
 @module_router.post('/create')
 async def create_module(module: ModuleModel):
-    check_module = session.query(Modules).filter(Modules.id == module.id)
+    check_module = session.query(Modules).filter(Modules.id == module.id).first()
     if check_module:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Module already exists")
 

@@ -27,7 +27,7 @@ async def get_all_lessons():
 
 @lesson_router.post('/create')
 async def create_lesson(lesson: LessonModel):
-    lesson_check = session.query(Lesson).filter(Lesson.id == lesson.id)
+    lesson_check = session.query(Lesson).filter(Lesson.id == lesson.id).first()
     if lesson_check:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Lesson already exists")
 

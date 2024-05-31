@@ -18,7 +18,7 @@ async def get_courses():
 
 @course_router.post("/create")
 async def create_course(course: CourseModel):
-    check = session.query(Courses).filter(Courses.id == course.id)
+    check = session.query(Courses).filter(Courses.id == course.id).first()
     if check:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="This course already exists")
 

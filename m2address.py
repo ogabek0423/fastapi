@@ -27,7 +27,7 @@ async def get_addresses():
 
 @address_router.post('/create_address')
 async def create_address(address: AddressModel):
-    adr_check = session.query(Address).filter(Address.id == address.id)
+    adr_check = session.query(Address).filter(Address.id == address.id).first()
     if adr_check:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Address is already registered")
 

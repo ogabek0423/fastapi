@@ -18,7 +18,7 @@ async def get_all_pay_types():
 
 @pyt_router.post('/create')
 async def create_pay_type(pytype: PayTypeModel):
-    check = session.query(PayType).filter(PayType.id == pytype.id)
+    check = session.query(PayType).filter(PayType.id == pytype.id).first()
     if check:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='PayType already exists')
 
