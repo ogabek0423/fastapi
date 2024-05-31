@@ -31,7 +31,7 @@ async def create_lesson(lesson: LessonModel):
     if lesson_check:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Lesson already exists")
 
-    new_lesson = LessonModel(
+    new_lesson = Lesson(
         id=lesson.id,
         title=lesson.title,
         description=lesson.description,
