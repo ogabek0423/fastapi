@@ -1,10 +1,9 @@
 from fastapi import HTTPException
-from http import HTTPStatus
 from fastapi import APIRouter
 from fastapi import status
 from db.database import Session, ENGINE
-from models import User
-from schemas import RegisterUser, LoginUser
+from db.models import User
+from db.schemas import RegisterUser, LoginUser
 from werkzeug import security
 
 a_router = APIRouter(prefix='/auth', tags=['auth'])
