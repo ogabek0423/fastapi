@@ -17,6 +17,13 @@ async def get_all_payments():
         {
             "id": payment.id,
             "amount": payment.amount,
+            "user": {
+                "id": payment.user_i.id,
+                "first_name": payment.user_i.first_name,
+                "last_name": payment.user_i.last_name,
+                "username": payment.user_i.username,
+                "email": payment.user_i.email
+            },
             "type": {
                 "id": payment.pay_t.id,
                 "type": payment.pay_t.type
@@ -38,18 +45,25 @@ async def get_all_payments():
         }
         for payment in payments
     ]
-    return jsonable_encoder(payments)
+    return jsonable_encoder(context)
 
 
 @pay_router.get('/{id}')
-async def get_all_payments(id: int):
-    payment = session.query(Payments).filter(Payments.id == id).first()
+async def get_one_payment(id: int):
+    payment = session.query(Payments).filter(Payments.user_id == id).first()
     data = {
             "id": payment.id,
             "amount": payment.amount,
             "type": {
                 "id": payment.pay_t.id,
                 "type": payment.pay_t.type
+            },
+            "user": {
+                "id": payment.user_i.id,
+                "first_name": payment.user_i.first_name,
+                "last_name": payment.user_i.last_name,
+                "username": payment.user_i.username,
+                "email": payment.user_i.email
             },
             "course": {
                 "id": payment.course.id,
@@ -69,6 +83,65 @@ async def get_all_payments(id: int):
     return jsonable_encoder(data)
 
 
+@pay_router.get('/user_pays/{id}')
+async def get_user_pays(id: int):
+    payments = session.query(Payments).filter(Payments.user_id == id).all()
+    if payments:
+        context = [
+            {
+                "id": payment.id,
+                "amount": payment.amount,
+                "type": {
+                    "id": payment.pay_t.id,
+                    "type": payment.pay_t.type
+                },
+                "user": {
+                    "id": payment.user_i.id,
+                    "first_name": payment.user_i.first_name,
+                    "last_name": payment.user_i.last_name,
+                    "username": payment.user_i.username,
+                    "email": payment.user_i.email
+                },
+                "course": {
+                    "id": payment.course.id,
+                    "name": payment.course.name,
+                    "description": payment.course.description,
+                    "module": {
+                        "id": payment.course.modl.id,
+                        "name": payment.course.modl.name,
+                        "description": payment.course.modl.description,
+                        "lesson": {
+                            'id': payment.course.modl.lson.id,
+                            'title': payment.course.modl.lson.title
+                        }
+                    }
+                }
+            }
+            for payment in payments
+        ]
+        return jsonable_encoder(context)
+    return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payment does not exist")
+
+
+@pay_router.get('/user_total_pay/{id}')
+async def user_total_pay(id:int):
+    payments = session.query(Payments).filter(Payments.user_id == id).all()
+    if payments:
+        count = len(payments)
+        total = 0
+        name = ''
+        for payment in payments:
+            total += payment.amount
+            name = payment.user_i.username
+        data = {
+            "foydalanuvchi": name,
+            "total pay": total,
+            "count pay": count
+        }
+        return jsonable_encoder(data)
+    return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Data does not exist")
+
+
 @pay_router.post('/create')
 async def create_payment(payment: PayModel):
     check = session.query(Payments).filter(Payments.id == payment.id).first()
@@ -86,11 +159,19 @@ async def create_payment(payment: PayModel):
     session.commit()
     payment = new_payment
     data = {
+            "msg": "Payment created",
             "id": payment.id,
             "amount": payment.amount,
             "type": {
                 "id": payment.pay_t.id,
                 "type": payment.pay_t.type
+            },
+            "user": {
+                "id": payment.user_i.id,
+                "first_name": payment.user_i.first_name,
+                "last_name": payment.user_i.last_name,
+                "username": payment.user_i.username,
+                "email": payment.user_i.email
             },
             "course": {
                 "id": payment.course.id,
@@ -110,7 +191,7 @@ async def create_payment(payment: PayModel):
             if payment.course.modl else None
             if payment.course.modl.lson else None
         }
-    return HTTPException(status_code=status.HTTP_201_CREATED, detail="Payment created successfully")
+    return HTTPException(status_code=status.HTTP_201_CREATED, detail=data)
 
 
 @pay_router.put('/{id}')
