@@ -18,7 +18,12 @@ async def get_modules():
             "id": module.id,
             "name": module.name,
             "description": module.description,
-            "lesson_id": module.lesson_id
+            "lesson": {
+                'id': module.lson.id,
+                'title': module.lson.title,
+                'description': module.lson.description,
+                'homework': module.lson.homework
+                }
         }
         for module in modules
     ]
@@ -34,7 +39,12 @@ async def get_modules(id: int):
             "id": module.id,
             "name": module.name,
             "description": module.description,
-            "lesson_id": module.lesson_id
+            "lesson": {
+                'id': module.lson.id,
+                'title': module.lson.title,
+                'description': module.lson.description,
+                'homework': module.lson.homework
+                }
         }
     ]
 
@@ -55,7 +65,21 @@ async def create_module(module: ModuleModel):
     )
     session.add(module_data)
     session.commit()
-    return HTTPException(status_code=status.HTTP_201_CREATED, detail="Module created successfully")
+
+    context = {
+        "msg": "Module created",
+        "id": module_data.id,
+        "name": module_data.name,
+        "description": module_data.description,
+        "lesson": {
+            'id': module_data.lson.id,
+            'title': module_data.lson.title,
+            'description': module_data.lson.description,
+            'homework': module_data.lson.homework
+        } if module_data.lson else None
+    }
+
+    return HTTPException(status_code=status.HTTP_201_CREATED, detail=context)
 
 
 @module_router.put('/{id}')
@@ -72,7 +96,18 @@ async def update_module(id: int, module: ModuleModel):
 
                 data = {
                     "code": 200,
-                    "message": "Module updated"
+                    "message": "Module updated",
+                    "detail": {
+                        "id": check.id,
+                        "name": check.name,
+                        "description": check.description,
+                        "lesson": {
+                            'id': check.lson.id,
+                            'title': check.lson.title,
+                            'description': check.lson.description,
+                            'homework': check.lson.homework
+                        }
+                    }
                 }
 
                 return jsonable_encoder(data)

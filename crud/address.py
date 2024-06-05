@@ -17,7 +17,10 @@ async def get_addresses():
         {
             "id": address.id,
             "name": address.name,
-            "city_id": address.city_id
+            "city": {
+                "id": address.cities.id,
+                "name": address.cities.name
+            }
         }
         for address in addresses
     ]
@@ -32,7 +35,10 @@ async def get_addresses(id: int):
         {
             "id": address.id,
             "name": address.name,
-            "city_id": address.city_id
+            "city": {
+                "id": address.cities.id,
+                "name": address.cities.name
+            }
         }
 
     ]
@@ -53,7 +59,8 @@ async def create_address(address: AddressModel):
     )
     session.add(new_adr)
     session.commit()
-    return HTTPException(status_code=status.HTTP_201_CREATED, detail="Address has been created!")
+
+    return HTTPException(status_code=status.HTTP_201_CREATED, detail="Address has been added")
 
 
 @address_router.put('/{id}')

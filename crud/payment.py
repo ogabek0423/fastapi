@@ -13,13 +13,60 @@ pay_router = APIRouter(prefix="/payment")
 @pay_router.get('/')
 async def get_all_payments():
     payments = session.query(Payments).all()
+    context = [
+        {
+            "id": payment.id,
+            "amount": payment.amount,
+            "type": {
+                "id": payment.pay_t.id,
+                "type": payment.pay_t.type
+            },
+            "course": {
+                "id": payment.course.id,
+                "name": payment.course.name,
+                "description": payment.course.description,
+                "module": {
+                    "id": payment.course.modl.id,
+                    "name": payment.course.modl.name,
+                    "description": payment.course.modl.description,
+                    "lesson": {
+                        'id': payment.course.modl.lson.id,
+                        'title': payment.course.modl.lson.title
+                    }
+                }
+            }
+        }
+        for payment in payments
+    ]
     return jsonable_encoder(payments)
 
 
 @pay_router.get('/{id}')
 async def get_all_payments(id: int):
-    payment = session.query(Payments).first()
-    return jsonable_encoder(payment)
+    payment = session.query(Payments).filter(Payments.id == id).first()
+    data = {
+            "id": payment.id,
+            "amount": payment.amount,
+            "type": {
+                "id": payment.pay_t.id,
+                "type": payment.pay_t.type
+            },
+            "course": {
+                "id": payment.course.id,
+                "name": payment.course.name,
+                "description": payment.course.description,
+                "module": {
+                    "id": payment.course.modl.id,
+                    "name": payment.course.modl.name,
+                    "description": payment.course.modl.description,
+                    "lesson": {
+                        'id': payment.course.modl.lson.id,
+                        'title': payment.course.modl.lson.title
+                    }
+                }
+            }
+        }
+    return jsonable_encoder(data)
 
 
 @pay_router.post('/create')
@@ -32,10 +79,37 @@ async def create_payment(payment: PayModel):
         id=payment.id,
         amount=payment.amount,
         type=payment.type,
-        user_id=payment.user_id
+        user_id=payment.user_id,
+        course_id=payment.course_id
     )
     session.add(new_payment)
     session.commit()
+    payment = new_payment
+    data = {
+            "id": payment.id,
+            "amount": payment.amount,
+            "type": {
+                "id": payment.pay_t.id,
+                "type": payment.pay_t.type
+            },
+            "course": {
+                "id": payment.course.id,
+                "name": payment.course.name,
+                "description": payment.course.description,
+                "module": {
+                    "id": payment.course.modl.id,
+                    "name": payment.course.modl.name,
+                    "description": payment.course.modl.description,
+                    "lesson": {
+                        'id': payment.course.modl.lson.id,
+                        'title': payment.course.modl.lson.title
+                    }
+                }
+            }
+            if payment.course else None
+            if payment.course.modl else None
+            if payment.course.modl.lson else None
+        }
     return HTTPException(status_code=status.HTTP_201_CREATED, detail="Payment created successfully")
 
 
@@ -51,9 +125,28 @@ async def update_payment(id: int, update: PayModel):
                 for key, value in update.dict().items():
                     setattr(check, key, value)
                     session.commit()
+                payment = check
                 data = {
-                    "code": 200,
-                    "message": "Payment updated successfully"
+                    "id": payment.id,
+                    "amount": payment.amount,
+                    "type": {
+                        "id": payment.pay_t.id,
+                        "type": payment.pay_t.type
+                    },
+                    "course": {
+                        "id": payment.course.id,
+                        "name": payment.course.name,
+                        "description": payment.course.description,
+                        "module": {
+                            "id": payment.course.modl.id,
+                            "name": payment.course.modl.name,
+                            "description": payment.course.modl.description,
+                            "lesson": {
+                                'id': payment.course.modl.lson.id,
+                                'title': payment.course.modl.lson.title
+                            }
+                        }
+                    }
                 }
                 return jsonable_encoder(data)
             return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bunday user mavjud emas!")

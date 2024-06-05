@@ -47,7 +47,7 @@ class CourseModel(BaseModel):
     name: str
     description: str
     module_id: Optional[int]
-    user_id: Optional[int]
+    price: Optional[int]
 
 
 class PayTypeModel(BaseModel):
@@ -59,6 +59,7 @@ class PayModel(BaseModel):
     id: Optional[int]
     user_id: Optional[int]
     amount: Optional[float]
+    course_id: Optional[int]
     type: Optional[int]
 
 

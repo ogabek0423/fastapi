@@ -14,13 +14,52 @@ session = Session(bind=ENGINE)
 @ax_router.get('/')
 async def user_list():
     users = session.query(User).all()
-    return jsonable_encoder(users)
+    context = [
+        {
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "username": user.username,
+            "is_active": user.is_active,
+            "is_superuser": user.is_superuser,
+            "address": {
+                "id": user.adr.id,
+                "name": user.adr.name,
+                "city": {
+                    "id": user.adr.cities.id,
+                    "name": user.adr.cities.name
+                }
+            }
+        }
+        for user in users
+    ]
+    return jsonable_encoder(context)
 
 
 @ax_router.get('/{id}')
 async def user_one(id:int):
     user = session.query(User).filter(User.id == id).first()
-    return jsonable_encoder(user)
+
+    context_1 = {
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "username": user.username,
+            "is_active": user.is_active,
+            "is_superuser": user.is_superuser,
+            "address": {
+                "id": user.adr.id,
+                "name": user.adr.name,
+                "city": {
+                    "id": user.adr.cities.id,
+                    "name": user.adr.cities.name
+                }
+            }
+        }
+
+    return jsonable_encoder(context_1)
 
 
 @ax_router.post('/create')
@@ -45,7 +84,27 @@ async def create(user: RegisterUser):
 
     session.add(new_user)
     session.commit()
-    raise HTTPException(status_code=status.HTTP_201_CREATED, detail='succes')
+    user_x = new_user
+    context_2 = [
+        {
+            "id": user_x.id,
+            "first_name": user_x.first_name,
+            "last_name": user_x.last_name,
+            "email": user_x.email,
+            "username": user_x.username,
+            "is_active": user_x.is_active,
+            "is_superuser": user_x.is_superuser,
+            "address": {
+                "id": user_x.adr.id,
+                "name": user_x.adr.name,
+                "city": {
+                    "id": user_x.adr.cities.id,
+                    "name": user_x.adr.cities.name
+                }
+            } if user_x.adr else None
+        }
+    ]
+    raise HTTPException(status_code=status.HTTP_201_CREATED, detail=context_2)
 
 
 @ax_router.put('/{id}')
@@ -55,13 +114,27 @@ async def update(id: int, user: RegisterUser):
     id_check = session.query(User).filter(User.id == user.id).first()
     if user_check:
         if adr:
-            if id_check is None or adr.id == user.id:
+            if id_check is None or id == user.id:
                 for key, value in user.dict().items():
                     setattr(user_check, key, value)
                     session.commit()
+                user_x = user_check
                 data = {
-                    "code": 200,
-                    "msg": "success"
+                      "id": user_x.id,
+                      "first_name": user_x.first_name,
+                      "last_name": user_x.last_name,
+                      "email": user_x.email,
+                      "username": user_x.username,
+                      "is_active": user_x.is_active,
+                      "is_superuser": user_x.is_superuser,
+                      "address": {
+                        "id": user_x.adr.id,
+                        "name": user_x.adr.name,
+                        "city": {
+                            "id": user_x.adr.cities.id,
+                            "name": user_x.adr.cities.name
+                        }
+                      }
                 }
                 return jsonable_encoder(data)
             return HTTPException(status_code=status.HTTP_409_CONFLICT, detail='berilgan id malumotga ega')
