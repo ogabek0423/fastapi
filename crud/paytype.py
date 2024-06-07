@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from db.database import Session, ENGINE
 from db.schemas import PayTypeModel
-from db.models import PayType
+from db.models import PayType, User
 from fastapi import HTTPException, status, Depends
 from fastapi.encoders import jsonable_encoder
-from fastapi_auth_jwt import AuthJWT
+from fastapi_jwt_auth import AuthJWT
 
 
 session = Session(bind=ENGINE)
@@ -69,7 +69,7 @@ async def create_pay_type(pytype: PayTypeModel, Authentiztion: AuthJWT = Depends
 
 
 @pyt_router.put('/{id}')
-async def update_pay_type(id: int, pytype: PayTypeModel, Authentiztion: AuthJWT = depends()):
+async def update_pay_type(id: int, pytype: PayTypeModel, Authentiztion: AuthJWT = Depends()):
     try:
         Authentiztion.jwt_required()
 

@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from db.database import Session, ENGINE
 from db.schemas import CityModel
-from db.models import City
+from db.models import City, User
 from fastapi import HTTPException, status, Depends
 from fastapi.encoders import jsonable_encoder
-from fastapi_auth_jwt import AuthJWT
+from fastapi_jwt_auth import AuthJWT
 
 
 session = Session(bind=ENGINE)

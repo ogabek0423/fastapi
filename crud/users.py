@@ -186,6 +186,7 @@ async def update(id: int, user: RegisterUser, Authentiztion: AuthJWT=Depends()):
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User topilmadi!')
     return HTTPException(status_code=status.HTTP_409_CONFLICT, detail="only admin has permission")
 
+
 @ax_router.delete('/{id}')
 async def delete(id: int, Authentiztion: AuthJWT=Depends()):
     try:
