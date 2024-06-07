@@ -1,3 +1,5 @@
+import os
+
 from pydantic import BaseModel
 from typing import Optional
 
@@ -63,3 +65,5 @@ class PayModel(BaseModel):
     type: Optional[int]
 
 
+class JwtModel(BaseModel):
+    authjwt_secret_key: str = '192ba1860ccd8dcb1577983848289f3792e3c896fd7df9277a773d39d2c9e291'

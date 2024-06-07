@@ -1,10 +1,13 @@
 from fastapi import HTTPException
 from fastapi import APIRouter
-from fastapi import status
+from fastapi import status, Depends
 from db.database import Session, ENGINE
 from db.models import User
 from db.schemas import RegisterUser, LoginUser
 from werkzeug import security
+from fastapi_jwt_auth import AuthJWT
+from fastapi.encoders import jsonable_encoder
+
 
 a_router = APIRouter(prefix='/auth', tags=['auth'])
 session = Session(bind=ENGINE)
@@ -25,7 +28,7 @@ async def login():
 
 
 @a_router.post('/login')
-async def login(user: LoginUser):
+async def login(user: LoginUser, Authenzetion: AuthJWT = Depends()):
     username = session.query(User).filter(User.username == user.username).first()
     if username is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User topilmadi')
@@ -33,7 +36,20 @@ async def login(user: LoginUser):
     user_check = session.query(User).filter(User.username == user.username).first()
 
     if security.check_password_hash(user_check.password, user.password):
-        raise HTTPException(status_code=status.HTTP_200_OK, detail='WELCOME')
+        access_token = Authenzetion.create_access_token(subject=user_check.username)
+        refresh_token = Authenzetion.create_refresh_token(subject=user_check.username)
+        data = {
+            "code": 200,
+            "msg": "login successful",
+            "user": {
+                "username": user_check.username
+            },
+            "token": {
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            }
+        }
+        return jsonable_encoder(data)
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Malumotlar topilmadi')
 
@@ -45,6 +61,7 @@ async def register(user: RegisterUser):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Bunday foydalanuvchi mavjud boshqa yarating')
 
     email = session.query(User).filter(User.email == user.email).first()
+
     if email or username is not None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Bunday foydalanuvchi royxatdan otgan')
 

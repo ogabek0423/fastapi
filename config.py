@@ -8,6 +8,8 @@ from crud.courses import course_router
 from crud.paytype import pyt_router
 from crud.payment import pay_router
 from crud.users import ax_router
+from db.schemas import JwtModel
+from fastapi_jwt_auth import AuthJWT
 
 app = FastAPI()
 app.include_router(a_router)
@@ -19,6 +21,11 @@ app.include_router(course_router)
 app.include_router(pyt_router)
 app.include_router(pay_router)
 app.include_router(ax_router)
+
+
+@AuthJWT.load_config
+def get_config():
+    return JwtModel()
 
 
 @app.get('/')

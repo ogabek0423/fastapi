@@ -111,5 +111,5 @@ class Payments(Base):
 
 # Create all tables in the database
 
-Base.metadata.create_all(ENGINE)
+# Base.metadata.create_all(ENGINE)
 
